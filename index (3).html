@@ -1,0 +1,126 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TidyTasks</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f2f5;
+      padding: 20px;
+      max-width: 600px;
+      margin: auto;
+    }
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+    .input-group {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    input[type="text"] {
+      flex: 1;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    button {
+      padding: 10px 15px;
+      background-color: #2ecc71;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #27ae60;
+    }
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+    li {
+      background-color: white;
+      padding: 10px;
+      margin-top: 10px;
+      border-radius: 5px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    li.completed span {
+      text-decoration: line-through;
+      color: gray;
+    }
+    .delete-btn {
+      background-color: #e74c3c;
+      border: none;
+      color: white;
+      padding: 5px 10px;
+      border-radius: 3px;
+      cursor: pointer;
+    }
+    .delete-btn:hover {
+      background-color: #c0392b;
+    }
+  </style>
+</head>
+<body>
+  <h1>TidyTasks</h1>
+  <div class="input-group">
+    <input type="text" id="tareaInput" placeholder="Escribe tu tarea aquí...">
+    <button onclick="agregarTarea()">Agregar</button>
+  </div>
+  <ul id="listaTareas"></ul>
+
+  <script>
+    function cargarTareas() {
+      const tareas = JSON.parse(localStorage.getItem("tidytasks")) || [];
+      const lista = document.getElementById("listaTareas");
+      lista.innerHTML = "";
+      tareas.forEach((tarea, index) => {
+        const li = document.createElement("li");
+        li.className = tarea.completada ? "completed" : "";
+        li.innerHTML = \`
+          <span onclick="marcarCompleta(\${index})">\${tarea.texto}</span>
+          <button class="delete-btn" onclick="eliminarTarea(\${index})">Eliminar</button>
+        \`;
+        lista.appendChild(li);
+      });
+    }
+
+    function agregarTarea() {
+      const input = document.getElementById("tareaInput");
+      const texto = input.value.trim();
+      if (texto !== "") {
+        const tareas = JSON.parse(localStorage.getItem("tidytasks")) || [];
+        tareas.push({ texto, completada: false });
+        localStorage.setItem("tidytasks", JSON.stringify(tareas));
+        input.value = "";
+        cargarTareas();
+      }
+    }
+
+    function marcarCompleta(index) {
+      const tareas = JSON.parse(localStorage.getItem("tidytasks"));
+      tareas[index].completada = !tareas[index].completada;
+      localStorage.setItem("tidytasks", JSON.stringify(tareas));
+      cargarTareas();
+    }
+
+    function eliminarTarea(index) {
+      const tareas = JSON.parse(localStorage.getItem("tidytasks"));
+      tareas.splice(index, 1);
+      localStorage.setItem("tidytasks", JSON.stringify(tareas));
+      cargarTareas();
+    }
+
+    cargarTareas();
+  </script>
+</body>
+</html>
